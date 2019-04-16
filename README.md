@@ -26,6 +26,7 @@ directory.
 
 
 **Method 2**
+
 If you want to make a scheduled script/worker and make a purging engine. Then you push all the items to purged in a queue(DB/amqp etc) and purge it via purge-nginx-cache.php script.
 
 Here, I have taken a MySQL Queue(table). Just insert the items to be purged in nginx_cache_cleaner_log table and schedule purge-nginx-cache.php script. Also, make changes in entity-cache directory confi before using it.
