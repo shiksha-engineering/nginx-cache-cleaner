@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-This simple script **removes** an item or set of items from
+As name suggests, nginx-cache-cleaner **removes** an item or set of items from
 [Nginx](http://nginx.org) cache directory.
 
 It accepts a
