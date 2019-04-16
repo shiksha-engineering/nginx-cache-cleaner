@@ -1,0 +1,53 @@
+#!/bin/bash
+
+SNAME=${0##*/}
+
+function print_usage() {
+    echo "$SNAME <URI (grep pattern)> <cache directory>."
+}
+
+## check if number of arguments are not 2 then abort
+if [ $# -ne 2 ]; then
+    print_usage
+    exit 1
+fi
+
+## This returns the files where the items are cached.
+## argument $1 is the filename, can be a pattern .
+## argument $2 is the cache directory.
+## argument $3 is (optional) the number of parallel processes to run for grep.
+function get_nginx_cached_files() {
+    ## The maximum number of parallel processes. 16 since the cache naming scheme is hex based.
+    local max_parallel=${3-16}
+    ## Get the cache files running grep in parallel for each top level
+    ## cache dir.
+    #echo "param 1 : $1"
+    #echo "param 2 : $2"
+    find $2 -maxdepth 1 -type d | xargs -P $max_parallel -n 1 grep -ERl --line-buffered 2>/dev/null "^KEY:.*$1" | sort -u | head -50
+} 
+
+## Removes an item from the given cache zone.
+## $1 - the filename, can be a pattern .
+## $2 - the cache directory.
+function purge_nginxcache_item() {
+    local cache_files
+
+    [ -d $2 ] || exit 2
+    cache_files=$(get_nginx_cached_files "$1" $2)
+    echo $cache_files
+    ## Act based on grep result.
+    if [ -n "$cache_files" ]; then
+        ## Loop over all matched items.
+        for i in $cache_files; do
+            [ -f $i ] || continue
+            echo "Pending Deleting $i from $2."
+            rm $i
+        done
+    else
+        echo "not cached"
+        exit
+    fi
+} 
+
+## purge the given item from the cache.
+purge_nginxcache_item $1 $2
