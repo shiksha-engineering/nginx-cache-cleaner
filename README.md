@@ -22,7 +22,7 @@ directory.
     
  2. Delete all json files from the `/data/nginx/jsoncache` cache.
  
-        nginx-cache-purge "\.json" /data/nginx/jsoncache 
+        nginx-cache-cleaner "\.json" /data/nginx/jsoncache 
 
 
 **Method 2**
